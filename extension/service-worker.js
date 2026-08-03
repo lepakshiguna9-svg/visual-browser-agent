@@ -33,13 +33,23 @@ function buildEvent(tab, source) {
   };
 }
 
+function shouldTrack(tab) {
+  return Boolean(tab?.url) && !/^(chrome|edge|about|devtools):/i.test(tab.url);
+}
+
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete") postEvent(buildEvent(tab, "tabs.onUpdated"));
+  if (changeInfo.status === "complete" && shouldTrack(tab)) {
+    postEvent(buildEvent(tab, "tabs.onUpdated"));
+  }
 });
 
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
-  const tab = await chrome.tabs.get(tabId);
-  postEvent(buildEvent(tab, "tabs.onActivated"));
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    if (shouldTrack(tab)) postEvent(buildEvent(tab, "tabs.onActivated"));
+  } catch (error) {
+    console.warn("Unable to read activated tab", error);
+  }
 });
 
 chrome.runtime.onInstalled.addListener(async () => {

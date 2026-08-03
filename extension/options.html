@@ -2,23 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Visual Browser Agent Settings</title>
+    <title>Visual Browser Agent · Settings</title>
     <style>
-      body { font: 15px system-ui, sans-serif; max-width: 560px; margin: 40px auto; padding: 0 20px; }
-      label { display: block; margin: 18px 0 6px; font-weight: 600; }
-      input[type=url] { width: 100%; box-sizing: border-box; padding: 10px; }
-      button { margin-top: 20px; padding: 10px 16px; }
-      #status { color: #176b37; min-height: 1.2em; }
+      :root { color-scheme: dark; font: 15px/1.5 Inter, system-ui, sans-serif; background: #0b1020; color: #e6eaff; }
+      body { max-width: 680px; margin: 0 auto; padding: 52px 24px; background: radial-gradient(circle at 15% 0%, #26356b 0, transparent 38%), #0b1020; min-height: 100vh; box-sizing: border-box; }
+      .eyebrow { color: #8ea2ff; letter-spacing: .14em; text-transform: uppercase; font-size: 12px; font-weight: 700; }
+      h1 { font-size: 42px; line-height: 1.05; margin: 10px 0 12px; }
+      .lede { color: #aab4d7; max-width: 560px; }
+      .card { margin-top: 30px; padding: 28px; border: 1px solid #2a3767; border-radius: 22px; background: rgba(18, 27, 56, .86); box-shadow: 0 20px 60px rgba(0,0,0,.22); }
+      label { display: block; margin: 18px 0 8px; font-weight: 650; }
+      input[type=url] { width: 100%; box-sizing: border-box; padding: 13px 14px; border-radius: 12px; border: 1px solid #40518d; background: #0c1430; color: #fff; font: inherit; }
+      .toggle { display: flex; gap: 10px; align-items: center; color: #cbd3f2; }
+      button { margin-top: 22px; padding: 12px 18px; border: 0; border-radius: 12px; background: linear-gradient(135deg, #7c8cff, #a374ff); color: #0b1020; font-weight: 800; cursor: pointer; }
+      #status { color: #8cf0b0; min-height: 1.2em; }
     </style>
   </head>
   <body>
-    <h1>Visual Browser Agent</h1>
-    <p>Choose where navigation events are stored.</p>
-    <label for="backendUrl">Backend URL</label>
-    <input id="backendUrl" type="url" required>
-    <label><input id="enabled" type="checkbox"> Enable tracking</label>
-    <button id="save">Save settings</button>
-    <p id="status" role="status"></p>
+    <span class="eyebrow">Visual Browser Agent</span>
+    <h1>Keep your event stream intentional.</h1>
+    <p class="lede">Choose where navigation metadata is stored. This prototype is privacy-first by default: it records URLs and page titles only, never page contents, passwords, or keystrokes.</p>
+    <section class="card">
+      <label for="backendUrl">Backend URL</label>
+      <input id="backendUrl" type="url" required>
+      <label class="toggle"><input id="enabled" type="checkbox"> Enable tracking</label>
+      <button id="save">Save settings</button>
+      <p id="status" role="status"></p>
+    </section>
     <script src="options.js"></script>
   </body>
 </html>

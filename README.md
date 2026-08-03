@@ -37,6 +37,7 @@ Endpoints:
 - `GET /health`
 - `POST /api/events`
 - `GET /api/events` (latest 100 events)
+- `GET /dashboard` (local read-only event viewer)
 
 ## Load the Chrome extension
 

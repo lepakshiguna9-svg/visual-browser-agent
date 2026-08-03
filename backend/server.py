@@ -8,9 +8,11 @@ import os
 import sqlite3
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from urllib.parse import urlparse
 
 DEFAULT_DB_PATH = os.environ.get("VISUAL_AGENT_DB", "events.sqlite3")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def connect_database(path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
@@ -69,6 +71,14 @@ class EventHandler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         path = urlparse(self.path).path
+        if path in {"/", "/dashboard"}:
+            dashboard = (PROJECT_ROOT / "dashboard.html").read_bytes()
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(dashboard)))
+            self.end_headers()
+            self.wfile.write(dashboard)
+            return
         if path == "/health":
             self._send_json(HTTPStatus.OK, {"status": "ok"})
             return
@@ -88,6 +98,8 @@ class EventHandler(BaseHTTPRequestHandler):
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
+            if length > 32_768:
+                raise ValueError("request body is too large")
             payload = json.loads(self.rfile.read(length))
             event = validate_event(payload)
             with connect_database(self.db_path) as connection:

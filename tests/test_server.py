@@ -50,6 +50,13 @@ class ServerTests(unittest.TestCase):
         self.assertEqual(status, 400)
         self.assertIn("required strings", body["error"])
 
+    def test_dashboard_is_served(self):
+        self.connection.request("GET", "/dashboard")
+        response = self.connection.getresponse()
+        body = response.read().decode()
+        self.assertEqual(response.status, 200)
+        self.assertIn("See the browser in motion", body)
+
 
 if __name__ == "__main__":
     unittest.main()

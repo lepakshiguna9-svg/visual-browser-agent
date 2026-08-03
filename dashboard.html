@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visual Browser Agent · Live Events</title>
+  <style>
+    :root { font: 15px/1.5 Inter, system-ui, sans-serif; color: #e9ecff; background: #080d1b; }
+    * { box-sizing: border-box; } body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 80% 0%, #2b3e86 0, transparent 35%), #080d1b; }
+    main { max-width: 1100px; margin: 0 auto; padding: 58px 24px; } .eyebrow { color: #91a0ff; letter-spacing: .16em; text-transform: uppercase; font-weight: 800; font-size: 12px; }
+    h1 { font-size: clamp(34px, 6vw, 64px); line-height: .98; margin: 12px 0; max-width: 720px; } .sub { color: #aeb8dc; max-width: 620px; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 34px 0 18px; } .pill { padding: 9px 13px; border-radius: 999px; background: #142147; color: #aebdff; border: 1px solid #33488d; }
+    button { border: 0; border-radius: 11px; padding: 10px 14px; background: #8d9aff; color: #0a1020; font-weight: 800; cursor: pointer; }
+    .panel { overflow: hidden; border: 1px solid #26376c; border-radius: 20px; background: rgba(14, 23, 49, .9); box-shadow: 0 24px 80px rgba(0,0,0,.25); } table { width: 100%; border-collapse: collapse; } th, td { padding: 17px 18px; text-align: left; border-bottom: 1px solid #1d2b55; } th { color: #8e9bc4; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; } td { color: #dce2ff; } td.url { max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .empty { padding: 44px; text-align: center; color: #98a4cc; }
+    @media (max-width: 700px) { th:nth-child(3), td:nth-child(3) { display: none; } main { padding-top: 36px; } }
+  </style>
+</head>
+<body><main>
+  <span class="eyebrow">Local observability console</span>
+  <h1>See the browser in motion.</h1>
+  <p class="sub">A lightweight, privacy-first activity stream for validating the extension-to-API round trip.</p>
+  <div class="toolbar"><span class="pill" id="count">Loading events…</span><button id="refresh">Refresh</button></div>
+  <section class="panel"><table><thead><tr><th>Event</th><th>Page</th><th>Source</th><th>Captured</th></tr></thead><tbody id="events"></tbody></table><div class="empty" id="empty">No events yet. Browse to a normal page with the extension enabled.</div></section>
+</main><script>
+  const events = document.querySelector('#events'), empty = document.querySelector('#empty'), count = document.querySelector('#count');
+  const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[character]);
+  const formatTime = value => new Date(value).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+  async function load() { const response = await fetch('/api/events'); const data = await response.json(); events.innerHTML = data.events.map(event => `<tr><td>${escapeHtml(event.event_type)}</td><td class="url" title="${escapeHtml(event.url)}">${escapeHtml(event.title || event.url)}</td><td>${escapeHtml(event.source)}</td><td>${escapeHtml(formatTime(event.received_at))}</td></tr>`).join(''); empty.hidden = data.events.length > 0; count.textContent = `${data.events.length} recent event${data.events.length === 1 ? '' : 's'}`; }
+  document.querySelector('#refresh').addEventListener('click', load); load().catch(() => { count.textContent = 'API unavailable'; empty.textContent = 'Start the backend, then refresh this page.'; });
+</script></body></html>
