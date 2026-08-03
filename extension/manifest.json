@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Visual Browser Agent",
+  "version": "0.1.0",
+  "description": "Tracks active browser navigation events and sends them to a local API.",
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["http://localhost:8787/*"],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Visual Browser Agent"
+  },
+  "options_page": "options.html"
+}
